@@ -14,10 +14,10 @@ export class DecryptorComponent implements OnInit {
 
   private vigenereService: VigenereService;
 
-  private cryptogram: Cryptogram = new Cryptogram();
-  private plainText: string;
-  private possibleKey: string;
-  private possibleKeyLength: number;
+  private _cryptogram: Cryptogram = new Cryptogram();
+  private _plainText: string;
+  private _possibleKey: string;
+  private _possibleKeyLength: number;
 
   constructor(vigenereService: VigenereService) {
     this.vigenereService = vigenereService;
@@ -27,47 +27,47 @@ export class DecryptorComponent implements OnInit {
   }
 
   calculateNgrams(): void {
-    CalculationUtil.calculateNgrams(this.cryptogram);
+    CalculationUtil.calculateNgrams(this._cryptogram);
   }
 
   frequencyAnalysis(): void {
-    if (!isNaN(this.possibleKeyLength)) {
-      CalculationUtil.frequencyAnalysis(this.cryptogram, this.possibleKeyLength);
+    if (!isNaN(this._possibleKeyLength)) {
+      CalculationUtil.frequencyAnalysis(this._cryptogram, this._possibleKeyLength);
     }
   }
 
   generateKeyByLength() {
-    this.possibleKey = this.vigenereService.generateKeyByLength(this.possibleKeyLength, this.cryptogram);
+    this._possibleKey = this.vigenereService.generateKeyByLength(this._possibleKeyLength, this._cryptogram);
   }
 
   generateKeyByTrigram(ngram: NGram) {
-    this.possibleKey = this.vigenereService.generateKeyByNgram(ngram.text, ngram.gcd, this.cryptogram);
-    this.possibleKeyLength = this.possibleKey.length;
+    this._possibleKey = this.vigenereService.generateKeyByNgram(ngram.text, ngram.gcd, this._cryptogram);
+    this._possibleKeyLength = this._possibleKey.length;
   }
 
   changeCharInPossibleKey(index: number, letter: string) {
     const char = this.vigenereService.getMatchingKeyToValue(letter, 'E');
-    this.possibleKey = this.replaceAt(index, char);
+    this._possibleKey = this.replaceAt(index, char);
   }
 
   decrypt() {
-    this.plainText = this.vigenereService.decrypt(this.cryptogram.cipherText, this.possibleKey);
+    this._plainText = this.vigenereService.decrypt(this._cryptogram.cipherText, this._possibleKey);
   }
 
   getBigrams() {
-    return this.cryptogram.bigrams != null ? this.sortNGrams(this.cryptogram.bigrams) : null;
+    return this._cryptogram.bigrams != null ? this.sortNGrams(this._cryptogram.bigrams) : null;
   }
 
   getTrigrams() {
-    return this.cryptogram.trigrams != null ? this.sortNGrams(this.cryptogram.trigrams) : null;
+    return this._cryptogram.trigrams != null ? this.sortNGrams(this._cryptogram.trigrams) : null;
   }
 
   getFrequencies() {
-    return this.sortMapNullSafe(this.cryptogram.frequencies);
+    return this.sortMapNullSafe(this._cryptogram.frequencies);
   }
 
   getLetterCounts() {
-    return this.sortMapNullSafe(this.cryptogram.letterCounts);
+    return this.sortMapNullSafe(this._cryptogram.letterCounts);
   }
 
   private sortMapNullSafe(map: Map<string, number>[]) {
@@ -86,7 +86,7 @@ export class DecryptorComponent implements OnInit {
   }
 
   private replaceAt(index: number, replace: string) {
-    return this.possibleKey.substr(0, index) + replace + this.possibleKey.substr(index + replace.length);
+    return this._possibleKey.substr(0, index) + replace + this._possibleKey.substr(index + replace.length);
   }
 
   private sortNGrams(nGrams: Set<NGram>) {
@@ -97,4 +97,35 @@ export class DecryptorComponent implements OnInit {
   }
 
 
+  get cryptogram(): Cryptogram {
+    return this._cryptogram;
+  }
+
+  set cryptogram(value: Cryptogram) {
+    this._cryptogram = value;
+  }
+
+  get possibleKey(): string {
+    return this._possibleKey;
+  }
+
+  set possibleKey(value: string) {
+    this._possibleKey = value;
+  }
+
+  get possibleKeyLength(): number {
+    return this._possibleKeyLength;
+  }
+
+  set possibleKeyLength(value: number) {
+    this._possibleKeyLength = value;
+  }
+
+  get plainText(): string {
+    return this._plainText;
+  }
+
+  set plainText(value: string) {
+    this._plainText = value;
+  }
 }
