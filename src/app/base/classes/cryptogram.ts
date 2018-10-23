@@ -18,7 +18,9 @@ export class Cryptogram {
   }
 
   set cipherText(value: string) {
-    this._cipherText = value;
+    if (value) {
+      this._cipherText = value.toUpperCase();
+    }
   }
 
   get trigrams(): Set<NGram> {

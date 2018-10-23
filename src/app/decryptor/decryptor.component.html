@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" xmlns="http://www.w3.org/1999/html">
   <div class="form-group was-validated row">
     <textarea class="form-control col" rows="10" placeholder="Enter cipher text here..."
               [(ngModel)]="cryptogram.cipherText"
@@ -7,8 +7,12 @@
               disabled></textarea>
   </div>
   <div class="form-group row">
+    <input type="text" class="form-control col-3" placeholder="Key length" [(ngModel)]="possibleKeyLength"
+           (ngModelChange)="frequencyAnalysis()" required>
+    <a class="btn btn-primary col-2" (click)="generateKeyByLength()" href="#">Generate key</a>
+    <span class="col"></span>
     <input type="text" class="form-control col-3" placeholder="Enter key here" [(ngModel)]="possibleKey" required/>
-    <a class="btn btn-primary col-1" (click)="decrypt()" href="#">Solve</a>
+    <a class="btn btn-primary col-2" (click)="decrypt()" href="#">Solve</a>
   </div>
   <div class="container">
     <mat-expansion-panel>
@@ -23,7 +27,7 @@
       <div class="container">
         <div class="row align-items-start">
           <div class="col-4" *ngFor="let item of getTrigrams()">
-            <a class="col-4 font-weight-bold" href="#" (click)="generateKey(item)">{{item.text}}({{item.offsets.length}})</a>
+            <a class="col-4 font-weight-bold" href="#" (click)="generateKeyByTrigram(item)">{{item.text}}({{item.offsets.length}})</a>
             <span class="col-4">{{item.gcd}}</span>
             <span class="col-4">{{item.offsets}}</span>
           </div>
@@ -42,9 +46,45 @@
       <div class="container">
         <div class="row align-items-start">
           <div class="col-6" *ngFor="let item of getBigrams()">
-            <a class="col-4 font-weight-bold" (click)="generateKey(item)" href="#">{{item.text}}({{item.offsets.length}})</a>
+            <a class="col-4 font-weight-bold" (click)="generateKeyByTrigram(item)" href="#">{{item.text}}({{item.offsets.length}})</a>
             <span class="col-4">{{item.gcd}}</span>
             <span class="col-4">{{item.offsets}}</span>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="font-weight-bold">Frequencies:</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="container">
+        <div class="row align-items-start">
+          <div class="col-6" *ngFor="let frequency of getFrequencies(); let i = index;">
+            <span class="row font-weight-bold">Series {{i+1}}</span>
+            <div class="col-6" *ngFor="let item of frequency">
+              <a class="col-4 font-weight-bold" href="#" (click)="changeCharInPossibleKey(i, item[0])">{{item['0']}}</a>
+              <span class="col-4">{{item['1']}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span class="font-weight-bold">Letters:</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="container">
+        <div class="row align-items-start">
+          <div class="col-6" *ngFor="let frequency of getLetterCounts(); let i = index;">
+            <span class="row font-weight-bold">Series {{i+1}}</span>
+            <div class="col-6" *ngFor="let item of frequency">
+              <a class="col-4 font-weight-bold" href="#" (click)="changeCharInPossibleKey(i, item[0])">{{item['0']}}</a>
+              <span class="col-4">{{item['1']}}</span>
+            </div>
           </div>
         </div>
       </div>

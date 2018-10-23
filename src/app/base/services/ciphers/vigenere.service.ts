@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ICipher} from './Icipher';
 import {CalculationUtil} from '../utils/calculation-util';
+import {Cryptogram} from '../../classes/cryptogram';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +11,23 @@ export class VigenereService implements ICipher {
   constructor() {
   }
 
-  generateKey(ngram: string, keyLength: number, cipherText: string): string {
-    let key = this.generateKnownPartAssumingTHE(ngram);
-    const letters = CalculationUtil.calculateLetters(cipherText, keyLength);
+  generateKeyByLength(keyLength: number, cryptogram: Cryptogram): string {
+    CalculationUtil.frequencyAnalysis(cryptogram, keyLength);
+    let key = '';
 
     for (let i = key.length; i < keyLength; i++) {
-      key += this.getMatchingKeyToValue(letters[i].keys().next().value, 'E');
+      key += this.getMatchingKeyToValue(Array.from(cryptogram.frequencies[i])[0]['0'], 'E');
+    }
+
+    return key;
+  }
+
+  generateKeyByNgram(ngram: string, keyLength: number, cryptogram: Cryptogram): string {
+    let key = this.generateKnownPartAssumingTHE(ngram);
+    CalculationUtil.frequencyAnalysis(cryptogram, keyLength);
+
+    for (let i = key.length; i < keyLength; i++) {
+      key += this.getMatchingKeyToValue(Array.from(cryptogram.frequencies[i])[0]['0'], 'E');
     }
 
     return key;
@@ -39,7 +51,7 @@ export class VigenereService implements ICipher {
     return key;
   }
 
-  private getMatchingKeyToValue(key: string, value: string): string {
+  public getMatchingKeyToValue(key: string, value: string): string {
     const keyIndex = CalculationUtil.ALPHABET.indexOf(key);
     const valueIndex = CalculationUtil.ALPHABET.indexOf(value);
     const index = keyIndex - valueIndex < 0 ? keyIndex - valueIndex + CalculationUtil.ALPHABET.length : keyIndex - valueIndex;

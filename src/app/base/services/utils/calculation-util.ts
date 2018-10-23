@@ -3,7 +3,6 @@ import {NGram} from '../../classes/ngram';
 
 export class CalculationUtil {
 
-  // public static readonly ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   public static readonly ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   constructor() {
@@ -20,7 +19,7 @@ export class CalculationUtil {
     cryptogram.indexOfCoincidence = CalculationUtil.calculateIndexOfCoincidence(cryptogram.letterCounts);
   }
 
-  public static calculateLetters(cipherText: string, keyLength: number): Map<string, number>[] {
+  private static calculateLetters(cipherText: string, keyLength: number): Map<string, number>[] {
     return CalculationUtil.sortLetters(CalculationUtil.countLetters(cipherText, keyLength));
   }
 

@@ -17,6 +17,7 @@ export class DecryptorComponent implements OnInit {
   private cryptogram: Cryptogram = new Cryptogram();
   private plainText: string;
   private possibleKey: string;
+  private possibleKeyLength: number;
 
   constructor(vigenereService: VigenereService) {
     this.vigenereService = vigenereService;
@@ -29,8 +30,24 @@ export class DecryptorComponent implements OnInit {
     CalculationUtil.calculateNgrams(this.cryptogram);
   }
 
-  generateKey(ngram: NGram) {
-    this.possibleKey = this.vigenereService.generateKey(ngram.text, ngram.gcd, this.cryptogram.cipherText);
+  frequencyAnalysis(): void {
+    if (!isNaN(this.possibleKeyLength)) {
+      CalculationUtil.frequencyAnalysis(this.cryptogram, this.possibleKeyLength);
+    }
+  }
+
+  generateKeyByLength() {
+    this.possibleKey = this.vigenereService.generateKeyByLength(this.possibleKeyLength, this.cryptogram);
+  }
+
+  generateKeyByTrigram(ngram: NGram) {
+    this.possibleKey = this.vigenereService.generateKeyByNgram(ngram.text, ngram.gcd, this.cryptogram);
+    this.possibleKeyLength = this.possibleKey.length;
+  }
+
+  changeCharInPossibleKey(index: number, letter: string) {
+    const char = this.vigenereService.getMatchingKeyToValue(letter, 'E');
+    this.possibleKey = this.replaceAt(index, char);
   }
 
   decrypt() {
@@ -43,6 +60,33 @@ export class DecryptorComponent implements OnInit {
 
   getTrigrams() {
     return this.cryptogram.trigrams != null ? this.sortNGrams(this.cryptogram.trigrams) : null;
+  }
+
+  getFrequencies() {
+    return this.sortMapNullSafe(this.cryptogram.frequencies);
+  }
+
+  getLetterCounts() {
+    return this.sortMapNullSafe(this.cryptogram.letterCounts);
+  }
+
+  private sortMapNullSafe(map: Map<string, number>[]) {
+    if (map == null) {
+      return null;
+    }
+
+    const result = [];
+
+    for (let i = 0; i < map.length; i++) {
+      result[i] = Array.from(map[i])
+        .sort((a: [string, number], b: [string, number]) => b['1'] - a['1']);
+    }
+
+    return result;
+  }
+
+  private replaceAt(index: number, replace: string) {
+    return this.possibleKey.substr(0, index) + replace + this.possibleKey.substr(index + replace.length);
   }
 
   private sortNGrams(nGrams: Set<NGram>) {
